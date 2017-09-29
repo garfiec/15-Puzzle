@@ -4,6 +4,8 @@ import java.io.*;
 import java.util.*;
 import java.lang.Math.*;
 
+// TODO: use coordinates instead of x, y variables
+
 public class Game_Manager {
 	public static final int BOARD_SIZE = 4;
 	public static final int NUM_PIECES = BOARD_SIZE * BOARD_SIZE;
@@ -22,6 +24,7 @@ public class Game_Manager {
 		game_board = new byte[BOARD_SIZE][BOARD_SIZE];
 		initializeBoard();
 
+		// Test area
 		printBoard();
 		printValid();
 	}
@@ -98,10 +101,17 @@ public class Game_Manager {
 	* Function: shuffleBoard
 	* ----------------------------------------------------
 	* Shuffles the board by randomly moving tiles until a
-	* specified depth (difficulty)
+	* specified depth (difficulty).
 	*/
 	public void shuffleBoard(int depth) {
+		// TODO: shuffle board
+	}
 
+	private void swapTile(int x1, int y1, int x2, int y2) {
+		byte temp_tile = game_board[x1][y1];
+
+		game_board[x1][y1] = game_board[x2][y2];
+		game_board[x2][y2] = temp_tile;
 	}
 
 	/*
@@ -133,11 +143,12 @@ public class Game_Manager {
 	* Internal method used to make a raw move in the board.
 	*/
 	private void makeMove(int x, int y) {
-		if (validateMove(x, y)) {
-			System.out.println("Valid move!");
-		}
-		else {
-			System.out.println("Invalid move!");
+		if (validateMove(x, y)) {			
+			swapTile(x, y, blankX, blankY);
+
+			// Update blank tracker
+			blankX = x;
+			blankY = y;
 		}
 	}
 
@@ -149,14 +160,14 @@ public class Game_Manager {
 	* processing like save previous state.
 	*/
 	public void userMakeMove(int x, int y) {
-		// Save current state
+		// TODO: Save current state
 
 		// Make move
 		makeMove(x, y);
 	}
 
 	public boolean undoMove() {
-
+		// TODO: Undo move
 		return false;
 	}
 }
