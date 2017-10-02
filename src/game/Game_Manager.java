@@ -32,7 +32,7 @@ public class Game_Manager {
 		// Test area
 		printBoard();
 		printValid();
-		shuffleBoard(10);
+		shuffleBoard(1);
 		printBoard();
 		printValid();
 	}
@@ -189,6 +189,20 @@ public class Game_Manager {
 		}
 	}
 
+	private boolean isInOrder() {
+		int num = 1;
+		for (int y = 0; y < BOARD_SIZE; y++) {
+			for (int x = 0; x < BOARD_SIZE; x++) {
+				if (num != NUM_PIECES) {
+					if (game_board[x][y] != num++) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+
 	/*
 	* Function userMakeMove
 	* ----------------------------------------------------
@@ -201,6 +215,11 @@ public class Game_Manager {
 
 		// Make move
 		makeMove(x, y);
+
+		// Check if game over
+		if (isInOrder()) {
+			System.out.println("Congrats! You won!");
+		}
 	}
 
 	public boolean undoMove() {
