@@ -32,6 +32,9 @@ public class Game_GUI extends JFrame {
 		createMenuBar();
 		createGameUI();
 
+		// Wait until game is ready to be played
+		while (!game_manager.isGameReady()) {}
+
 		// Show initial board setting
 		updateBoard();
 

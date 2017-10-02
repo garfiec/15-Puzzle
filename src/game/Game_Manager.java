@@ -14,6 +14,8 @@ public class Game_Manager {
 	private byte game_board[][]; // game_board[x][y]
 	private int  blankX, blankY; // position of blank
 
+	boolean gameReady = false;
+
 	public Game_Manager() {
 		// Validate game constants
 		if (NUM_PIECES > Byte.MAX_VALUE) {
@@ -24,6 +26,8 @@ public class Game_Manager {
 		// Initialize Board
 		game_board = new byte[BOARD_SIZE][BOARD_SIZE];
 		initializeBoard();
+
+		gameReady = true;
 
 		// Test area
 		printBoard();
@@ -61,6 +65,10 @@ public class Game_Manager {
 			System.out.println("");
 		}
 		System.out.println("");
+	}
+
+	public boolean isGameReady() {
+		return gameReady;
 	}
 
 	/*
