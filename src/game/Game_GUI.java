@@ -168,8 +168,10 @@ public class Game_GUI extends JFrame {
 			game_manager.userMakeMove(x, y);
 			updateBoard();
 			
-			if (game_manager.isGameWon())
-				JOptionPane.showMessageDialog(null, "Congrats! You won!");
+			if (game_manager.isGameWon()) {
+				int moves = game_manager.getMoveCount();
+				JOptionPane.showMessageDialog(null, "Congrats! You won!\n You took " + moves + " moves.");
+			}
 		}
 
 	} 

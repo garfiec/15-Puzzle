@@ -39,7 +39,7 @@ public class Game_Manager {
 		history.clear();
 		move_count = 0;
 
-		shuffleBoard(75);
+		shuffleBoard(12);
 	}
 	
 	private void initializeBoard() {
