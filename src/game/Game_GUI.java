@@ -7,28 +7,16 @@ import java.awt.event.*;
 import javax.swing.*;
 
 public class Game_GUI extends JFrame {
-	Game_Manager game_manager; //Keep
+	Game_Manager game_manager; 
 
-	private JButton plainButton;
-	private JButton label;
+	private JPanel panel; 
+	private JPanel gameBoardGrid; 
 
-	private JLabel outfield;
-
-	private JPanel panel; //Keep
-	private JPanel gameBoardGrid; // Keep
-
-	private JButton gameBttnCtrls[][]; //keep
-
-
-
-	private int count;
+	private JButton gameBttnCtrls[][]; 
 
 	private JMenuBar menuBar;
-	JMenu menu, submenu, fileMenu;
-	JRadioButtonMenuItem rbMenuItem;
-	JCheckBoxMenuItem cbMenuItem;
 
-	private int board_size; //keep
+	private int board_size; 
 
 	// Set up GUI
 	public Game_GUI(Game_Manager gm) {
@@ -47,7 +35,7 @@ public class Game_GUI extends JFrame {
 		// Show initial board setting
 		updateBoard();
 
-		setSize( 300, 300 );
+		setSize( 500, 500 );
 		setVisible( true );
 
 	} 
@@ -111,6 +99,8 @@ public class Game_GUI extends JFrame {
 	}
 
 	private void createGameUI() {
+		GameButtonHandler gameBttnHndlr = new GameButtonHandler();
+
 		gameBoardGrid = new JPanel();
 		gameBoardGrid.setBackground(Color.white);
 		gameBoardGrid.setLayout(new GridLayout(board_size, board_size, 3, 3));
@@ -127,6 +117,8 @@ public class Game_GUI extends JFrame {
 				gameBoardGrid.add(tile_pnl, BorderLayout.CENTER);
 				
 				JButton bttn = new JButton();
+				bttn.setActionCommand(Integer.toString((i*board_size) + j));
+				bttn.addActionListener(gameBttnHndlr);
 				tile_pnl.add(bttn, BorderLayout.CENTER);
 
 				gameBttnCtrls[j][i] = bttn;
@@ -149,23 +141,18 @@ public class Game_GUI extends JFrame {
 		}
 	}
 
-
-	// inner class for button event handling
-	private class ButtonHandler implements ActionListener {
-
-		// private int count = 1;
-
-		// handle button event
+	private class GameButtonHandler implements ActionListener {
 		public void actionPerformed( ActionEvent event ) {
-			JOptionPane.showMessageDialog( null,
-			                               "You pressed: " + event.getActionCommand() + " " + count);
+			int bttnID = Integer.parseInt(event.getActionCommand());
 
-			outfield.setText ("Count Value: " + count);
+			int x = bttnID % board_size;
+			int y = bttnID / board_size;
 
-			count++;
+			game_manager.userMakeMove(x, y);
+			updateBoard();
 		}
 
-	} // end private inner class ButtonHandler
+	} 
 
 	private class MenuButtonHandler implements ActionListener {
 		private void showHowTo() {
