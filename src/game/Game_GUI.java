@@ -33,9 +33,6 @@ public class Game_GUI extends JFrame {
 		createMenuBar();
 		createGameUI();
 
-		// Wait until game is ready to be played
-		while (!game_manager.isGameReady()) {}
-
 		// Show initial board setting
 		updateBoard();
 
@@ -55,7 +52,6 @@ public class Game_GUI extends JFrame {
 
 		// 1. File Menu
 		menu = new JMenu("File");
-		// menu.setMnemonic(KeyEvent.VK_B);
 		menuBar.add(menu);
 
 		// 1.1 File Menu: Undo
@@ -93,16 +89,12 @@ public class Game_GUI extends JFrame {
 
 		// 1.5 File Menu: Exit
 		menuItem = new JMenuItem("Exit");
-		// menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, ActionEvent.ALT_MASK));
-		// menuItem.getAccessibleContext().setAccessibleDescription("");
 		menuItem.setActionCommand("Exit");
 		menuItem.addActionListener(menuBttnHndlr);
 		menu.add(menuItem);		 
 
 		// 2. Help Menu
 		menu = new JMenu("Help");
-		// menu.setMnemonic(KeyEvent.VK_C);
-		// menu.getAccessibleContext().setAccessibleDescription("");
 		menuBar.add(menu);
 
 		// 2.1 Help Menu: How to Play

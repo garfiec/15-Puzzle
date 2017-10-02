@@ -15,8 +15,6 @@ public class Game_Manager {
 
 	private Deque<Point> history; 	// Log of moves user makes 
 
-	boolean gameReady = false;
-
 	public Game_Manager() {
 		// Validate game constants
 		if (NUM_PIECES > Byte.MAX_VALUE) {
@@ -31,20 +29,13 @@ public class Game_Manager {
 
 		// Start new game
 		startNewGame();
-
-		gameReady = true;
-
-		// Test area
-		printBoard();
-		printValid();
-		shuffleBoard(1);
-		printBoard();
-		printValid();
 	}
 
 	public void startNewGame() {
 		initializeBoard();
 		history.clear();
+
+		shuffleBoard(75);
 	}
 	
 	private void initializeBoard() {
