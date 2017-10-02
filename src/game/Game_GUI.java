@@ -197,9 +197,10 @@ public class Game_GUI extends JFrame {
 			// }
 			Timer t = new Timer(500, new ActionListener() {
 				public void actionPerformed(ActionEvent event) {
-					if (!game_manager.undoMove()) 
+					if (!game_manager.undoMove()) {
 						((Timer)event.getSource()).stop();
-						updateBoard();
+					}
+					updateBoard();
 				}
 			});
 			t.start();
@@ -235,10 +236,6 @@ public class Game_GUI extends JFrame {
 					showAbout();
 					break;
 			}
-			// showHowTo();
 		}
 	}
-
-
-
 }
