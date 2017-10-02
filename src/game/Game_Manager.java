@@ -189,7 +189,7 @@ public class Game_Manager {
 		}
 	}
 
-	private boolean isInOrder() {
+	public boolean isGameWon() {
 		int num = 1;
 		for (int y = 0; y < BOARD_SIZE; y++) {
 			for (int x = 0; x < BOARD_SIZE; x++) {
@@ -217,7 +217,7 @@ public class Game_Manager {
 		makeMove(x, y);
 
 		// Check if game over
-		if (isInOrder()) {
+		if (isGameWon()) {
 			System.out.println("Congrats! You won!");
 		}
 	}
