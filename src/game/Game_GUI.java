@@ -175,6 +175,9 @@ public class Game_GUI extends JFrame {
 
 			game_manager.userMakeMove(x, y);
 			updateBoard();
+			
+			if (game_manager.isGameWon())
+				JOptionPane.showMessageDialog(null, "Congrats! You won!");
 		}
 
 	} 
@@ -186,8 +189,7 @@ public class Game_GUI extends JFrame {
 		}
 
 		private void showAbout() {
-			// TODO: Add about message
-			JOptionPane.showMessageDialog(null, "2. Lorem ipsum dolar sit amet");
+			JOptionPane.showMessageDialog(null, "Program by Garfie Chiu for CS342 - Project 2");
 		}
 
 		// Undo each move with 1 second delay for visualization
