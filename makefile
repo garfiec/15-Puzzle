@@ -1,6 +1,6 @@
 default: build run
 build:
-	javac -d bin/ src/game/*.java
+	mkdir -p bin;javac -d bin/ src/game/*.java
 
 run:
 	java -cp bin/ game/Game
