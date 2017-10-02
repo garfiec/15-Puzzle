@@ -4,15 +4,14 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.lang.Math.*;
-
-// TODO: use coordinates instead of x, y variables
+import java.awt.Point;
 
 public class Game_Manager {
 	public static final int BOARD_SIZE = 4;
 	public static final int NUM_PIECES = BOARD_SIZE * BOARD_SIZE;
 
 	private byte game_board[][]; // game_board[x][y]
-	private int  blankX, blankY; // position of blank
+	private Point blank_pos; // position of blank
 
 	boolean gameReady = false;
 
@@ -25,6 +24,7 @@ public class Game_Manager {
 
 		// Initialize Board
 		game_board = new byte[BOARD_SIZE][BOARD_SIZE];
+		blank_pos = new Point(0, 0);
 		initializeBoard();
 
 		gameReady = true;
@@ -45,7 +45,7 @@ public class Game_Manager {
 				game_board[x][y] = (tile_num < NUM_PIECES) ? tile_num++:-1;
 		
 		// Initialize Blank Tile Tracker
-		blankX = BOARD_SIZE - 1; blankY = BOARD_SIZE - 1; // Initial pos is last element of array x,y
+		blank_pos.x = BOARD_SIZE - 1; blank_pos.y = BOARD_SIZE - 1; // Initial pos is last element of array x,y
 	}
 
 	/*
@@ -82,7 +82,7 @@ public class Game_Manager {
 		for (int y = 0; y < BOARD_SIZE; y++) {
 			for (int x = 0; x < BOARD_SIZE; x++) {
 				char c = (validateMove(x, y))? 'V':'-';
-				if (x == blankX && y == blankY) System.out.print("X" + " ");
+				if (x == blank_pos.x && y == blank_pos.y) System.out.print("X" + " ");
 				else System.out.print(c + " ");
 			}
 			System.out.println("");
@@ -119,8 +119,8 @@ public class Game_Manager {
 		for (int i = 0; i < depth; i++) {
 			int direction = ThreadLocalRandom.current().nextInt(0, 5);
 
-			int newX = blankX; 
-			int newY = blankY;
+			int newX = blank_pos.x; 
+			int newY = blank_pos.y;
 
 			switch(direction) {
 				case 0: // Left
@@ -164,8 +164,8 @@ public class Game_Manager {
 		if (x < 0 || x >= BOARD_SIZE || y < 0 || y >= BOARD_SIZE) return false;
 
 		// Is blank adjacent? Is blank directly next to?
-		int xDist = Math.abs(x - blankX);
-		int yDist = Math.abs(y - blankY);
+		int xDist = Math.abs(x - blank_pos.x);
+		int yDist = Math.abs(y - blank_pos.y);
 
 		if (xDist <= 1 && yDist <= 1)
 			if ((xDist ^ yDist) == 1)
@@ -181,11 +181,11 @@ public class Game_Manager {
 	*/
 	private void makeMove(int x, int y) {
 		if (validateMove(x, y)) {			
-			swapTile(x, y, blankX, blankY);
+			swapTile(x, y, blank_pos.x, blank_pos.y);
 
 			// Update blank tracker
-			blankX = x;
-			blankY = y;
+			blank_pos.x = x;
+			blank_pos.y = y;
 		}
 	}
 
