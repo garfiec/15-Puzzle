@@ -38,8 +38,8 @@ public class Game_GUI extends JFrame {
 		// Show initial board setting
 		updateBoard();
 
-		setSize( 500, 500 );
-		setVisible( true );
+		setSize(500, 500);
+		setVisible(true);
 
 	} 
 
@@ -55,29 +55,40 @@ public class Game_GUI extends JFrame {
 		// 1. File Menu
 		menu = new JMenu("File");
 		// menu.setMnemonic(KeyEvent.VK_B);
-		menu.getAccessibleContext().setAccessibleDescription("");
 		menuBar.add(menu);
 
 		// 1.1 File Menu: Exit
 		menuItem = new JMenuItem("Undo");
 		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
-		menuItem.getAccessibleContext().setAccessibleDescription("");
+		menuItem.getAccessibleContext().setAccessibleDescription("Undo last move");
+		menuItem.setActionCommand("Undo");
+		menuItem.addActionListener(menuBttnHndlr);
 		menu.add(menuItem);		
 
-		// 1.2 File Menu: Exit
+		// 1.2 File Menu: Reset
 		menuItem = new JMenuItem("Reset");
-		// menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, ActionEvent.ALT_MASK));
-		menuItem.getAccessibleContext().setAccessibleDescription("");
+		menuItem.getAccessibleContext().setAccessibleDescription("Starts a new game");
+		menuItem.setActionCommand("Reset");
+		menuItem.addActionListener(menuBttnHndlr);
 		menu.add(menuItem);		
 
 		menu.addSeparator();
 
-		// 1.3 File Menu: Exit
-		menuItem = new JMenuItem("Exit");
-		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, ActionEvent.ALT_MASK));
-		menuItem.getAccessibleContext().setAccessibleDescription("");
+		// 1.3 File Menu: Solve
+		menuItem = new JMenuItem("Solve");
+		menuItem.setActionCommand("Solve");
 		menuItem.addActionListener(menuBttnHndlr);
-		menu.add(menuItem);		
+		menu.add(menuItem);	
+
+		menu.addSeparator();
+
+		// 1.4 File Menu: Exit
+		menuItem = new JMenuItem("Exit");
+		// menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, ActionEvent.ALT_MASK));
+		// menuItem.getAccessibleContext().setAccessibleDescription("");
+		menuItem.setActionCommand("Exit");
+		menuItem.addActionListener(menuBttnHndlr);
+		menu.add(menuItem);		 
 
 		// 2. Help Menu
 		menu = new JMenu("Help");
@@ -89,12 +100,13 @@ public class Game_GUI extends JFrame {
 		menuItem = new JMenuItem("How to Play", KeyEvent.VK_A);
 		// menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, ActionEvent.ALT_MASK));
 		menuItem.getAccessibleContext().setAccessibleDescription("");
+		menuItem.setActionCommand("Tutorial");
 		menuItem.addActionListener(menuBttnHndlr);
 		menu.add(menuItem);
 
 		// 2.2 Help Menu: About
 		menuItem = new JMenuItem("About");
-		menuItem.getAccessibleContext().setAccessibleDescription("");
+		menuItem.setActionCommand("About");
 		menuItem.addActionListener(menuBttnHndlr);
 		menu.add(menuItem);
 
@@ -144,6 +156,7 @@ public class Game_GUI extends JFrame {
 		}
 	}
 
+	// Game Interface
 	private class GameButtonHandler implements ActionListener {
 		public void actionPerformed( ActionEvent event ) {
 			int bttnID = Integer.parseInt(event.getActionCommand());
@@ -159,12 +172,42 @@ public class Game_GUI extends JFrame {
 
 	private class MenuButtonHandler implements ActionListener {
 		private void showHowTo() {
-			updateBoard();
-			JOptionPane.showMessageDialog(null, "Test");
+			// TODO: Add how to note
+			JOptionPane.showMessageDialog(null, "1. Lorem ipsum dolar sit amet");
+		}
+
+		private void showAbout() {
+			// TODO: Add about message
+			JOptionPane.showMessageDialog(null, "2. Lorem ipsum dolar sit amet");
 		}
 
 		public void actionPerformed(ActionEvent event) {
-			showHowTo();
+			switch(event.getActionCommand()) {
+				case "Undo":
+					if (!game_manager.undoMove())
+						JOptionPane.showMessageDialog(null, "Nothing to undo!");
+					updateBoard();
+					break;
+				case "Reset":
+					game_manager.startNewGame();
+					updateBoard();
+					break;
+				case "Solve":
+					// TODO: Solve
+					System.out.println("Solve");
+					break;
+				case "Exit":
+					System.out.println("Goodbye.");
+					System.exit(0);
+					break;
+				case "Tutorial":
+					showHowTo();
+					break;
+				case "About":
+					showAbout();
+					break;
+			}
+			// showHowTo();
 		}
 	}
 
