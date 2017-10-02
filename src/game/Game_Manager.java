@@ -2,6 +2,7 @@ package game;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.lang.Math.*;
 
 // TODO: use coordinates instead of x, y variables
@@ -25,6 +26,9 @@ public class Game_Manager {
 		initializeBoard();
 
 		// Test area
+		printBoard();
+		printValid();
+		shuffleBoard(10);
 		printBoard();
 		printValid();
 	}
@@ -104,7 +108,32 @@ public class Game_Manager {
 	* specified depth (difficulty).
 	*/
 	public void shuffleBoard(int depth) {
-		// TODO: shuffle board
+		for (int i = 0; i < depth; i++) {
+			int direction = ThreadLocalRandom.current().nextInt(0, 5);
+
+			int newX = blankX; 
+			int newY = blankY;
+
+			switch(direction) {
+				case 0: // Left
+					newX--;
+					break;
+				case 1: // Right
+					newX++;
+					break;
+				case 2: // Up
+					newY--;
+					break;
+				case 3: // Down
+					newY++;
+					break;
+			}
+
+			if (validateMove(newX, newY)) 
+				makeMove(newX, newY);
+			else
+				i--; // Try again			
+		}
 	}
 
 	private void swapTile(int x1, int y1, int x2, int y2) {
@@ -124,7 +153,7 @@ public class Game_Manager {
 	*/
 	private boolean validateMove(int x, int y) {
 		// Check borders. (Not that this should be possible)
-		if (x < 0 || x > BOARD_SIZE || y < 0 || y > BOARD_SIZE) return false;
+		if (x < 0 || x >= BOARD_SIZE || y < 0 || y >= BOARD_SIZE) return false;
 
 		// Is blank adjacent? Is blank directly next to?
 		int xDist = Math.abs(x - blankX);
