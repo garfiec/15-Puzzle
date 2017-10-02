@@ -7,13 +7,19 @@ import java.awt.event.*;
 import javax.swing.*;
 
 public class Game_GUI extends JFrame {
-	Game_Manager game_manager;
+	Game_Manager game_manager; //Keep
 
 	private JButton plainButton;
 	private JButton label;
 
 	private JLabel outfield;
-	private JPanel nestedPanel;
+
+	private JPanel panel; //Keep
+	private JPanel gameBoardGrid; // Keep
+
+	private JButton gameBttnCtrls[][]; //keep
+
+
 
 	private int count;
 
@@ -22,45 +28,26 @@ public class Game_GUI extends JFrame {
 	JRadioButtonMenuItem rbMenuItem;
 	JCheckBoxMenuItem cbMenuItem;
 
+	private int board_size; //keep
 
-	// set up GUI
-	public Game_GUI(Game_Manager game_manager) {
+	// Set up GUI
+	public Game_GUI(Game_Manager gm) {
 		super("15 Tiles by Garfie Chiu");
 
-		setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-		// getContentPane().setLayout(new BorderLayout());
-		getContentPane().setLayout(new GridLayout(4, 4));
+		game_manager = gm;
 
-		// Create Menu
+		board_size = game_manager.getBoardSize();
+
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		// Create UI
 		createMenuBar();
+		createGameUI();
 
-		/*Example button code*/
-		count = 10;
+		// Show initial board setting
+		updateBoard();
 
-		ButtonHandler bh1 = new ButtonHandler() ;
-
-		plainButton = new JButton ("Click Here");
-		getContentPane().add (plainButton, BorderLayout.WEST );
-		plainButton.addActionListener ( bh1 );
-
-		label = new JButton ("Default Text");
-		getContentPane().add (label, BorderLayout.CENTER );
-		label.addActionListener ( new ButtonHandler() );
-
-		// code to create this output field
-		outfield = new JLabel ("Default text");
-		getContentPane().add (outfield, BorderLayout.SOUTH );
-		outfield.setText ("Some other Text");
-
-		nestedPanel = new JPanel( new GridLayout ( 2, 3, 5, 5 ), false );
-		for (int i = 1; i <= 6 ; i++) {
-			JLabel lab = new JLabel ( "Label " + i );
-			nestedPanel.add ( lab );
-		}
-
-		getContentPane().add (nestedPanel, BorderLayout.NORTH );
-
-		setSize( 300, 250 );
+		setSize( 300, 300 );
 		setVisible( true );
 
 	} 
@@ -123,6 +110,44 @@ public class Game_GUI extends JFrame {
 		this.setJMenuBar(menuBar);
 	}
 
+	private void createGameUI() {
+		gameBoardGrid = new JPanel();
+		gameBoardGrid.setBackground(Color.white);
+		gameBoardGrid.setLayout(new GridLayout(board_size, board_size, 3, 3));
+
+		// Initialize Buttons
+		gameBttnCtrls = new JButton[board_size][board_size];
+
+		for (int i = 0; i < board_size; i++) {
+			for (int j = 0; j < board_size; j++) {
+
+				JPanel tile_pnl = new JPanel();
+				tile_pnl.setLayout(new BorderLayout(0, 0));
+				tile_pnl.setBackground(Color.black);
+				gameBoardGrid.add(tile_pnl, BorderLayout.CENTER);
+				
+				JButton bttn = new JButton();
+				tile_pnl.add(bttn, BorderLayout.CENTER);
+
+				gameBttnCtrls[j][i] = bttn;
+			}
+		}
+
+		getContentPane().add(gameBoardGrid, BorderLayout.CENTER);
+	}
+
+	private void updateBoard() {
+		byte game_board[][] = game_manager.getGameBoard();
+
+		for (int x = 0; x < board_size; x++) {
+			for (int y = 0; y < board_size; y++) {
+				if (game_board[x][y] == -1)
+					gameBttnCtrls[x][y].setText("");
+				else 
+					gameBttnCtrls[x][y].setText(Integer.toString(game_board[x][y]));
+			}
+		}
+	}
 
 
 	// inner class for button event handling
@@ -144,12 +169,12 @@ public class Game_GUI extends JFrame {
 
 	private class MenuButtonHandler implements ActionListener {
 		private void showHowTo() {
+			updateBoard();
 			JOptionPane.showMessageDialog(null, "Test");
 		}
 
 		public void actionPerformed(ActionEvent event) {
 			showHowTo();
-			System.out.println("Got here");
 		}
 	}
 
