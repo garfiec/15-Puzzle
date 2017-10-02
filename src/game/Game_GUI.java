@@ -184,7 +184,7 @@ public class Game_GUI extends JFrame {
 			JOptionPane.showMessageDialog(null, "Program by Garfie Chiu for CS342 - Project 2");
 		}
 
-		// Undo each move with 1 second delay for visualization
+		// Undo each move with delay for visualization
 		private void undoAllMoves() {
 			// while (game_manager.undoMove()) {	
 

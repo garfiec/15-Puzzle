@@ -15,6 +15,8 @@ public class Game_Manager {
 
 	private Deque<Point> history; 	// Log of moves user makes 
 
+	private int move_count;
+
 	public Game_Manager() {
 		// Validate game constants
 		if (NUM_PIECES > Byte.MAX_VALUE) {
@@ -26,6 +28,7 @@ public class Game_Manager {
 		game_board = new byte[BOARD_SIZE][BOARD_SIZE];
 		blank_pos  = new Point(0, 0);
 		history = new ArrayDeque<Point>();
+		move_count = 0;
 
 		// Start new game
 		startNewGame();
@@ -34,6 +37,7 @@ public class Game_Manager {
 	public void startNewGame() {
 		initializeBoard();
 		history.clear();
+		move_count = 0;
 
 		shuffleBoard(75);
 	}
@@ -194,6 +198,10 @@ public class Game_Manager {
 		return false;
 	}
 
+	public int getMoveCount() {
+		return move_count;
+	}
+
 	public boolean isGameWon() {
 		int num = 1;
 		for (int y = 0; y < BOARD_SIZE; y++) {
@@ -222,6 +230,7 @@ public class Game_Manager {
 		// Make move
 		if (makeMove(x, y)) {
 			history.push(new_tile_pos);
+			move_count++;
 		}
 
 		// Check if game over
