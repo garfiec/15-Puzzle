@@ -5,6 +5,7 @@ import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.Timer;
 
 public class Game_GUI extends JFrame {
 	Game_Manager game_manager; 
@@ -57,7 +58,7 @@ public class Game_GUI extends JFrame {
 		// menu.setMnemonic(KeyEvent.VK_B);
 		menuBar.add(menu);
 
-		// 1.1 File Menu: Exit
+		// 1.1 File Menu: Undo
 		menuItem = new JMenuItem("Undo");
 		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
 		menuItem.getAccessibleContext().setAccessibleDescription("Undo last move");
@@ -65,7 +66,15 @@ public class Game_GUI extends JFrame {
 		menuItem.addActionListener(menuBttnHndlr);
 		menu.add(menuItem);		
 
-		// 1.2 File Menu: Reset
+		// 1.2 File Menu: Undo
+		menuItem = new JMenuItem("Undo All");
+		menuItem.setActionCommand("Undo All");
+		menuItem.addActionListener(menuBttnHndlr);
+		menu.add(menuItem);	
+
+		menu.addSeparator();
+
+		// 1.3 File Menu: Reset
 		menuItem = new JMenuItem("Reset");
 		menuItem.getAccessibleContext().setAccessibleDescription("Starts a new game");
 		menuItem.setActionCommand("Reset");
@@ -74,7 +83,7 @@ public class Game_GUI extends JFrame {
 
 		menu.addSeparator();
 
-		// 1.3 File Menu: Solve
+		// 1.4 File Menu: Solve
 		menuItem = new JMenuItem("Solve");
 		menuItem.setActionCommand("Solve");
 		menuItem.addActionListener(menuBttnHndlr);
@@ -82,7 +91,7 @@ public class Game_GUI extends JFrame {
 
 		menu.addSeparator();
 
-		// 1.4 File Menu: Exit
+		// 1.5 File Menu: Exit
 		menuItem = new JMenuItem("Exit");
 		// menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, ActionEvent.ALT_MASK));
 		// menuItem.getAccessibleContext().setAccessibleDescription("");
@@ -181,12 +190,31 @@ public class Game_GUI extends JFrame {
 			JOptionPane.showMessageDialog(null, "2. Lorem ipsum dolar sit amet");
 		}
 
+		// Undo each move with 1 second delay for visualization
+		private void undoAllMoves() {
+			// while (game_manager.undoMove()) {	
+
+			// }
+			Timer t = new Timer(500, new ActionListener() {
+				public void actionPerformed(ActionEvent event) {
+					if (!game_manager.undoMove()) 
+						((Timer)event.getSource()).stop();
+						updateBoard();
+				}
+			});
+			t.start();
+		}
+
 		public void actionPerformed(ActionEvent event) {
 			switch(event.getActionCommand()) {
 				case "Undo":
 					if (!game_manager.undoMove())
 						JOptionPane.showMessageDialog(null, "Nothing to undo!");
 					updateBoard();
+					break;
+				case "Undo All":
+					System.out.println("Undo all!");
+					undoAllMoves();
 					break;
 				case "Reset":
 					game_manager.startNewGame();
