@@ -72,10 +72,6 @@ public class Game_Manager {
 		System.out.println("");
 	}
 
-	public boolean isGameReady() {
-		return gameReady;
-	}
-
 	/*
 	* Function: printValid
 	* ----------------------------------------------------
