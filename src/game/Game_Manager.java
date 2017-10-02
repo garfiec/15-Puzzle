@@ -10,8 +10,10 @@ public class Game_Manager {
 	public static final int BOARD_SIZE = 4;
 	public static final int NUM_PIECES = BOARD_SIZE * BOARD_SIZE;
 
-	private byte game_board[][]; // game_board[x][y]
-	private Point blank_pos; // position of blank
+	private byte game_board[][]; 	// game_board[x][y]
+	private Point blank_pos; 		// Position of blank
+
+	private Deque<Point> history; 	// Log of moves user makes 
 
 	boolean gameReady = false;
 
@@ -22,10 +24,13 @@ public class Game_Manager {
 			System.exit(0);
 		}
 
-		// Initialize Board
+		// Initialize Game Variables
 		game_board = new byte[BOARD_SIZE][BOARD_SIZE];
-		blank_pos = new Point(0, 0);
-		initializeBoard();
+		blank_pos  = new Point(0, 0);
+		history = new ArrayDeque<Point>();
+
+		// Start new game
+		startNewGame();
 
 		gameReady = true;
 
@@ -35,6 +40,11 @@ public class Game_Manager {
 		shuffleBoard(1);
 		printBoard();
 		printValid();
+	}
+
+	public void startNewGame() {
+		initializeBoard();
+		history.clear();
 	}
 	
 	private void initializeBoard() {
@@ -178,15 +188,19 @@ public class Game_Manager {
 	* Function makeMove
 	* ----------------------------------------------------
 	* Internal method used to make a raw move in the board.
+	* Returns whether the move is successful.
 	*/
-	private void makeMove(int x, int y) {
+	private boolean makeMove(int x, int y) {
 		if (validateMove(x, y)) {			
 			swapTile(x, y, blank_pos.x, blank_pos.y);
 
 			// Update blank tracker
 			blank_pos.x = x;
 			blank_pos.y = y;
+
+			return true;
 		}
+		return false;
 	}
 
 	public boolean isGameWon() {
@@ -211,10 +225,13 @@ public class Game_Manager {
 	* processing like save previous state.
 	*/
 	public void userMakeMove(int x, int y) {
-		// TODO: Save current state
+		// Store the new position of tile (blank's old pos)
+		Point new_tile_pos = new Point(blank_pos);
 
 		// Make move
-		makeMove(x, y);
+		if (makeMove(x, y)) {
+			history.push(new_tile_pos);
+		}
 
 		// Check if game over
 		if (isGameWon()) {
@@ -223,7 +240,12 @@ public class Game_Manager {
 	}
 
 	public boolean undoMove() {
-		// TODO: Undo move
+		if (history.size() > 0) {
+			Point last = history.pop();
+			makeMove(last.x, last.y);
+			return true;
+		}
+
 		return false;
 	}
 }
