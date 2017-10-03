@@ -17,15 +17,11 @@ public class Game_GUI extends JFrame {
 
 	private JMenuBar menuBar;
 
-	private int board_size; 
-
 	// Set up GUI
 	public Game_GUI(Game_Manager gm) {
 		super("15 Tiles by Garfie Chiu");
 
 		game_manager = gm;
-
-		board_size = game_manager.getBoardSize();
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -119,13 +115,13 @@ public class Game_GUI extends JFrame {
 
 		gameBoardGrid = new JPanel();
 		gameBoardGrid.setBackground(Color.white);
-		gameBoardGrid.setLayout(new GridLayout(board_size, board_size, 3, 3));
+		gameBoardGrid.setLayout(new GridLayout(Game_Constants.BOARD_SIZE, Game_Constants.BOARD_SIZE, 3, 3));
 
 		// Initialize Buttons
-		gameBttnCtrls = new JButton[board_size][board_size];
+		gameBttnCtrls = new JButton[Game_Constants.BOARD_SIZE][Game_Constants.BOARD_SIZE];
 
-		for (int i = 0; i < board_size; i++) {
-			for (int j = 0; j < board_size; j++) {
+		for (int i = 0; i < Game_Constants.BOARD_SIZE; i++) {
+			for (int j = 0; j < Game_Constants.BOARD_SIZE; j++) {
 
 				JPanel tile_pnl = new JPanel();
 				tile_pnl.setLayout(new BorderLayout(0, 0));
@@ -133,7 +129,7 @@ public class Game_GUI extends JFrame {
 				gameBoardGrid.add(tile_pnl, BorderLayout.CENTER);
 				
 				JButton bttn = new JButton();
-				bttn.setActionCommand(Integer.toString((i*board_size) + j));
+				bttn.setActionCommand(Integer.toString((i*Game_Constants.BOARD_SIZE) + j));
 				bttn.addActionListener(gameBttnHndlr);
 				tile_pnl.add(bttn, BorderLayout.CENTER);
 
@@ -147,8 +143,8 @@ public class Game_GUI extends JFrame {
 	private void updateBoard() {
 		byte game_board[][] = game_manager.getGameBoard();
 
-		for (int x = 0; x < board_size; x++) {
-			for (int y = 0; y < board_size; y++) {
+		for (int x = 0; x < Game_Constants.BOARD_SIZE; x++) {
+			for (int y = 0; y < Game_Constants.BOARD_SIZE; y++) {
 				if (game_board[x][y] == -1)
 					gameBttnCtrls[x][y].setText("");
 				else 
@@ -162,8 +158,8 @@ public class Game_GUI extends JFrame {
 		public void actionPerformed( ActionEvent event ) {
 			int bttnID = Integer.parseInt(event.getActionCommand());
 
-			int x = bttnID % board_size;
-			int y = bttnID / board_size;
+			int x = bttnID % Game_Constants.BOARD_SIZE;
+			int y = bttnID / Game_Constants.BOARD_SIZE;
 
 			game_manager.userMakeMove(x, y);
 			updateBoard();

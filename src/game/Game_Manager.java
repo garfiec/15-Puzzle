@@ -9,7 +9,7 @@ import game.Game_Constants.*;
 
 public class Game_Manager {
 
-	Game_Board board = new Game_Board();
+	private Game_Board board = new Game_Board();
 
 	private Deque<Point> history; 	// Log of moves user makes 
 

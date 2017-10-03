@@ -73,7 +73,6 @@ public class Game_Board {
 	* the respective tile numbers.
 	*/
 	public byte[][] getGameBoard() {
-		// TODO: Update method to transmit to interface
 		return game_board;
 	}
 
