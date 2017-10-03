@@ -9,7 +9,7 @@ import game.Game_Constants.*;
 
 public class Game_Manager {
 
-	Game_Board game_board = new Game_Board();
+	Game_Board board = new Game_Board();
 
 	private Deque<Point> history; 	// Log of moves user makes 
 
@@ -33,7 +33,7 @@ public class Game_Manager {
 	}
 
 	public void startNewGame() {
-		game_board.initializeBoard();
+		board.initializeBoard();
 		move_count = 0;
 		history.clear();
 
@@ -58,7 +58,7 @@ public class Game_Manager {
 	* the respective tile numbers.
 	*/
 	public byte[][] getGameBoard() {
-		return game_board.getGameBoard();
+		return board.getGameBoard();
 	}
 
 	/*
@@ -71,8 +71,8 @@ public class Game_Manager {
 		for (int i = 0; i < depth; i++) {
 			int direction = ThreadLocalRandom.current().nextInt(0, 5);
 
-			int newX = game_board.getBlank().x; 
-			int newY = game_board.getBlank().y;
+			int newX = board.getBlank().x; 
+			int newY = board.getBlank().y;
 
 			switch(direction) {
 				case 0: // Left
@@ -89,8 +89,8 @@ public class Game_Manager {
 					break;
 			}
 
-			if (game_board.validateMove(newX, newY)) 
-				game_board.makeMove(newX, newY);
+			if (board.validateMove(newX, newY)) 
+				board.makeMove(newX, newY);
 			else
 				i--; // Try again			
 		}
@@ -113,7 +113,7 @@ public class Game_Manager {
 			int tileNum = 0;
 			for (int y = 0; y < Game_Constants.BOARD_SIZE; y++) {
 				for (int x = 0; x < Game_Constants.BOARD_SIZE; x++) {
-					game_board.setTile(x, y, (tileNum == Game_Constants.NUM_PIECES-1) ? -1:tiles.get(tileNum++));
+					board.setTile(x, y, (tileNum == Game_Constants.NUM_PIECES-1) ? -1:tiles.get(tileNum++));
 				}
 			}
 			puzzle_complexity = computePuzzleComplexity();
@@ -138,7 +138,7 @@ public class Game_Manager {
 		int tile_index = 0;
 		for (int y = 0; y < Game_Constants.BOARD_SIZE; y++) {
 			for (int x = 0; x < Game_Constants.BOARD_SIZE; x++) {
-				list[tile_index++] = (game_board.getTile(x, y) == -1) ? Game_Constants.NUM_PIECES:game_board.getTile(x, y);
+				list[tile_index++] = (board.getTile(x, y) == -1) ? Game_Constants.NUM_PIECES:board.getTile(x, y);
 			}
 		}
 
@@ -162,7 +162,7 @@ public class Game_Manager {
 		for (int y = 0; y < Game_Constants.BOARD_SIZE; y++) {
 			for (int x = 0; x < Game_Constants.BOARD_SIZE; x++) {
 				if (num != Game_Constants.NUM_PIECES) {
-					if (game_board.getTile(x, y) != num++) {
+					if (board.getTile(x, y) != num++) {
 						return false;
 					}
 				}
@@ -180,10 +180,10 @@ public class Game_Manager {
 	*/
 	public void userMakeMove(int x, int y) {
 		// Store the new position of tile (blank's old pos)
-		Point new_tile_pos = new Point(game_board.getBlank());
+		Point new_tile_pos = new Point(board.getBlank());
 
 		// Make move
-		if (game_board.makeMove(x, y)) {
+		if (board.makeMove(x, y)) {
 			history.push(new_tile_pos);
 			move_count++;
 		}
@@ -197,7 +197,7 @@ public class Game_Manager {
 	public boolean undoMove() {
 		if (history.size() > 0) {
 			Point last = history.pop();
-			game_board.makeMove(last.x, last.y);
+			board.makeMove(last.x, last.y);
 			return true;
 		}
 
