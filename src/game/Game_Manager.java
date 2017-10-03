@@ -40,16 +40,6 @@ public class Game_Manager {
 		// shuffleBoard(12);
 		randomizeBoard();
 	}
-	
-	
-	/*
-	* Function: getBoardSize
-	* ----------------------------------------------------
-	* Returns width/length of board. (Useful for generating GUI)
-	*/
-	public int getBoardSize() {
-		return Game_Constants.BOARD_SIZE;
-	}
 
 	/*
 	* Function: getGameBoard
