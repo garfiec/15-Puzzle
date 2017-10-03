@@ -147,12 +147,16 @@ public class Game_Manager {
 		return move_count;
 	}
 
-	public boolean isGameWon() {
+	public boolean isSolved() {
+		return isSolved(board);
+	}
+
+	public boolean isSolved(Game_Board b) {
 		int num = 1;
 		for (int y = 0; y < Game_Constants.BOARD_SIZE; y++) {
 			for (int x = 0; x < Game_Constants.BOARD_SIZE; x++) {
 				if (num != Game_Constants.NUM_PIECES) {
-					if (board.getTile(x, y) != num++) {
+					if (b.getTile(x, y) != num++) {
 						return false;
 					}
 				}
@@ -179,7 +183,7 @@ public class Game_Manager {
 		}
 
 		// Check if game over
-		if (isGameWon()) {
+		if (isSolved()) {
 			System.out.println("Congrats! You won!");
 		}
 	}
