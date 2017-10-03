@@ -5,13 +5,11 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.lang.Math.*;
 import java.awt.Point;
+import game.Game_Constants.*;
 
 public class Game_Manager {
-	public static final int BOARD_SIZE = 4;
-	public static final int NUM_PIECES = BOARD_SIZE * BOARD_SIZE;
 
-	private byte game_board[][]; 	// game_board[x][y]
-	private Point blank_pos; 		// Position of blank
+	Game_Board game_board = new Game_Board();
 
 	private Deque<Point> history; 	// Log of moves user makes 
 
@@ -20,80 +18,29 @@ public class Game_Manager {
 
 	public Game_Manager() {
 		// Validate game constants
-		if (NUM_PIECES > Byte.MAX_VALUE) {
+		if (Game_Constants.NUM_PIECES > Byte.MAX_VALUE) {
 			System.out.println("Error: Board size too large!");
 			System.exit(0);
 		}
 
 		// Initialize Game Variables
-		game_board = new byte[BOARD_SIZE][BOARD_SIZE];
-		blank_pos  = new Point(0, 0);
-		history = new ArrayDeque<Point>();
 		move_count = 0;
 		puzzle_complexity = 0;
+		history = new ArrayDeque<Point>();
 
 		// Start new game
 		startNewGame();
-		Game_Solver solver = new Game_Solver(game_board, BOARD_SIZE);
 	}
 
 	public void startNewGame() {
-		initializeBoard();
-		history.clear();
+		game_board.initializeBoard();
 		move_count = 0;
+		history.clear();
 
 		// shuffleBoard(12);
 		randomizeBoard();
 	}
 	
-	private void initializeBoard() {
-		// Initialize Board Pieces
-		byte tile_num = 1; 
-		for (int y = 0; y < BOARD_SIZE; y++) 		// Warning: This may trigger many cache misses. 
-			for (int x = 0; x < BOARD_SIZE; x++)  	// Look away now. You have been warned. =)
-				game_board[x][y] = (tile_num < NUM_PIECES) ? tile_num++:-1;
-		
-		// Initialize Blank Tile Tracker
-		blank_pos.x = BOARD_SIZE - 1; blank_pos.y = BOARD_SIZE - 1; // Initial pos is last element of array x,y
-	}
-
-	/*
-	* Function: printBoard
-	* ----------------------------------------------------
-	* Debug method: prints an text representation of
-	* the board.
-	*/
-	private void printBoard() {
-		for (int y = 0; y < BOARD_SIZE; y++) {
-			for (int x = 0; x < BOARD_SIZE; x++) {
-				if (game_board[x][y] < 10) 
-					System.out.print(game_board[x][y] + "    ");
-				else 
-					System.out.print(game_board[x][y] + "   ");
-			}
-			System.out.println("");
-		}
-		System.out.println("");
-	}
-
-	/*
-	* Function: printValid
-	* ----------------------------------------------------
-	* Debug method: prints an text representation of
-	* valid movies on the board. X is currrent blank.
-	* V is a valid move position.
-	*/
-	private void printValid() {
-		for (int y = 0; y < BOARD_SIZE; y++) {
-			for (int x = 0; x < BOARD_SIZE; x++) {
-				char c = (validateMove(x, y))? 'V':'-';
-				if (x == blank_pos.x && y == blank_pos.y) System.out.print("X" + " ");
-				else System.out.print(c + " ");
-			}
-			System.out.println("");
-		}
-		System.out.println("");
-	}
 	
 	/*
 	* Function: getBoardSize
@@ -101,7 +48,7 @@ public class Game_Manager {
 	* Returns width/length of board. (Useful for generating GUI)
 	*/
 	public int getBoardSize() {
-		return BOARD_SIZE;
+		return Game_Constants.BOARD_SIZE;
 	}
 
 	/*
@@ -111,7 +58,7 @@ public class Game_Manager {
 	* the respective tile numbers.
 	*/
 	public byte[][] getGameBoard() {
-		return game_board;
+		return game_board.getGameBoard();
 	}
 
 	/*
@@ -124,8 +71,8 @@ public class Game_Manager {
 		for (int i = 0; i < depth; i++) {
 			int direction = ThreadLocalRandom.current().nextInt(0, 5);
 
-			int newX = blank_pos.x; 
-			int newY = blank_pos.y;
+			int newX = game_board.getBlank().x; 
+			int newY = game_board.getBlank().y;
 
 			switch(direction) {
 				case 0: // Left
@@ -142,8 +89,8 @@ public class Game_Manager {
 					break;
 			}
 
-			if (validateMove(newX, newY)) 
-				makeMove(newX, newY);
+			if (game_board.validateMove(newX, newY)) 
+				game_board.makeMove(newX, newY);
 			else
 				i--; // Try again			
 		}
@@ -158,15 +105,15 @@ public class Game_Manager {
 	private void randomizeBoard() {
 		do {
 			ArrayList<Byte> tiles = new ArrayList<Byte>();
-			for (byte i = 1; i < NUM_PIECES; i++) 
+			for (byte i = 1; i < Game_Constants.NUM_PIECES; i++) 
 				tiles.add(i);
 
 			Collections.shuffle(tiles, new Random(System.nanoTime()));
 
 			int tileNum = 0;
-			for (int y = 0; y < BOARD_SIZE; y++) {
-				for (int x = 0; x < BOARD_SIZE; x++) {
-					game_board[x][y] = (tileNum == NUM_PIECES-1) ? -1:tiles.get(tileNum++);
+			for (int y = 0; y < Game_Constants.BOARD_SIZE; y++) {
+				for (int x = 0; x < Game_Constants.BOARD_SIZE; x++) {
+					game_board.setTile(x, y, (tileNum == Game_Constants.NUM_PIECES-1) ? -1:tiles.get(tileNum++));
 				}
 			}
 			puzzle_complexity = computePuzzleComplexity();
@@ -184,75 +131,26 @@ public class Game_Manager {
 	* Computes and returns a score for the puzzle complexity.
 	*/
 	private int computePuzzleComplexity() {
-		int[] list = new int[NUM_PIECES];
+		int[] list = new int[Game_Constants.NUM_PIECES];
 		int invertCt = 0;
 
 		// Put tile arrangement into array
 		int tile_index = 0;
-		for (int y = 0; y < BOARD_SIZE; y++) {
-			for (int x = 0; x < BOARD_SIZE; x++) {
-				list[tile_index++] = (game_board[x][y] == -1) ? NUM_PIECES:game_board[x][y];
+		for (int y = 0; y < Game_Constants.BOARD_SIZE; y++) {
+			for (int x = 0; x < Game_Constants.BOARD_SIZE; x++) {
+				list[tile_index++] = (game_board.getTile(x, y) == -1) ? Game_Constants.NUM_PIECES:game_board.getTile(x, y);
 			}
 		}
 
 		// Count num inversions
 		invertCt += list[0] - 1; // First piece is guarenteed to have every number below
-		for (int i = 0; i < NUM_PIECES; i++) {
-			for(int j = i; j < NUM_PIECES; j++) {
+		for (int i = 0; i < Game_Constants.NUM_PIECES; i++) {
+			for(int j = i; j < Game_Constants.NUM_PIECES; j++) {
 				if (list[j] < list[i]) invertCt++;
 			}
 		}
 
 		return invertCt;
-	}
-
-	private void swapTile(int x1, int y1, int x2, int y2) {
-		byte temp_tile = game_board[x1][y1];
-
-		game_board[x1][y1] = game_board[x2][y2];
-		game_board[x2][y2] = temp_tile;
-	}
-
-	/*
-	* Function: validateMove
-	* ----------------------------------------------------
-	* Takes the location of the selected piece and checks
-	* if the piece is eligible to move. First check the
-	* bounds to see if the piece exists, then see if the 
-	* blank piece is adjacent.
-	*/
-	private boolean validateMove(int x, int y) {
-		// Check borders. (Not that this should be possible)
-		if (x < 0 || x >= BOARD_SIZE || y < 0 || y >= BOARD_SIZE) return false;
-
-		// Is blank adjacent? Is blank directly next to?
-		int xDist = Math.abs(x - blank_pos.x);
-		int yDist = Math.abs(y - blank_pos.y);
-
-		if (xDist <= 1 && yDist <= 1)
-			if ((xDist ^ yDist) == 1)
-				return true;
-
-		return false;
-	}
-
-	/*
-	* Function makeMove
-	* ----------------------------------------------------
-	* Internal method used to make a raw move in the board.
-	* Returns whether the move is successful.
-	*/
-	private boolean makeMove(int x, int y) {
-		if (validateMove(x, y)) {			
-			swapTile(x, y, blank_pos.x, blank_pos.y);
-
-			// Update blank tracker
-			blank_pos.x = x;
-			blank_pos.y = y;
-
-			return true;
-		}
-		return false;
 	}
 
 	public int getMoveCount() {
@@ -261,10 +159,10 @@ public class Game_Manager {
 
 	public boolean isGameWon() {
 		int num = 1;
-		for (int y = 0; y < BOARD_SIZE; y++) {
-			for (int x = 0; x < BOARD_SIZE; x++) {
-				if (num != NUM_PIECES) {
-					if (game_board[x][y] != num++) {
+		for (int y = 0; y < Game_Constants.BOARD_SIZE; y++) {
+			for (int x = 0; x < Game_Constants.BOARD_SIZE; x++) {
+				if (num != Game_Constants.NUM_PIECES) {
+					if (game_board.getTile(x, y) != num++) {
 						return false;
 					}
 				}
@@ -282,10 +180,10 @@ public class Game_Manager {
 	*/
 	public void userMakeMove(int x, int y) {
 		// Store the new position of tile (blank's old pos)
-		Point new_tile_pos = new Point(blank_pos);
+		Point new_tile_pos = new Point(game_board.getBlank());
 
 		// Make move
-		if (makeMove(x, y)) {
+		if (game_board.makeMove(x, y)) {
 			history.push(new_tile_pos);
 			move_count++;
 		}
@@ -299,7 +197,7 @@ public class Game_Manager {
 	public boolean undoMove() {
 		if (history.size() > 0) {
 			Point last = history.pop();
-			makeMove(last.x, last.y);
+			game_board.makeMove(last.x, last.y);
 			return true;
 		}
 
