@@ -11,9 +11,23 @@ public class Game_Board {
 
 	public Game_Board() {
 		game_board = new byte[Game_Constants.BOARD_SIZE][Game_Constants.BOARD_SIZE];
-
 		blank_pos  = new Point(0, 0);
+	}
 
+	/*
+	* Function: copyFrom
+	* ----------------------------------------------------
+	* Performs a deep copy of Game_Board object to current
+	* instance.
+	*/
+	public void copyFrom(Game_Board original) {
+		for (int x = 0; x < Game_Constants.BOARD_SIZE; x++) {
+			for (int y = 0; y < Game_Constants.BOARD_SIZE; y++) {
+				game_board[x][y] = original.getTile(x, y);
+			}
+		}
+
+		blank_pos = new Point(original.getBlank());
 	}
 
 	public void initializeBoard() {

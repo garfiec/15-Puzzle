@@ -6,27 +6,12 @@ import java.awt.Point;
 
 public class Game_Solver {
 
-	private byte original_gameboard[][];
+	private Game_Board original_gameboard;
 	private int board_size;
 
-	public Game_Solver(byte[][] board, int board_size) {
+	public Game_Solver(Game_Board board, int board_size) {
 		this.board_size = board_size;
-		original_gameboard = makeBoardCopy(board);
-	}
-
-	/*
-	* Function: makeBoardCopy
-	* ----------------------------------------------------
-	* Performs a deep copy of the game board.
-	*/
-	private byte[][] makeBoardCopy(byte[][] original) {
-		byte copy[][] = new byte[board_size][board_size];
-		for (int x = 0; x < board_size; x++) {
-			for (int y = 0; y < board_size; y++) {
-				copy[x][y] = original[x][y];
-			}
-		}
-		return copy;
+		original_gameboard.copyFrom(board);
 	}
 
 	/*
@@ -38,9 +23,9 @@ public class Game_Solver {
 	* before replaying the shortest route.
 	*/
 	private void findShortestPath() {
-
-
+		Set seen = new HashSet();
 		Deque<Point> queue = new ArrayDeque<Point>();
+
 
 	}
 }
