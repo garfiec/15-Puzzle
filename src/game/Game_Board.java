@@ -15,12 +15,13 @@ public class Game_Board {
 	}
 
 	/*
-	* Function: copyFrom
+	* Constructor: Copy
 	* ----------------------------------------------------
 	* Performs a deep copy of Game_Board object to current
 	* instance.
 	*/
-	public void copyFrom(Game_Board original) {
+	public Game_Board(Game_Board original) {
+		this(); // Call default constructor
 		for (int x = 0; x < Game_Constants.BOARD_SIZE; x++) {
 			for (int y = 0; y < Game_Constants.BOARD_SIZE; y++) {
 				game_board[x][y] = original.getTile(x, y);
@@ -28,6 +29,23 @@ public class Game_Board {
 		}
 
 		blank_pos = new Point(original.getBlank());
+	}
+
+	/*
+	* Function: compareTo
+	* ----------------------------------------------------
+	* Compares the game board of another instance to 
+	* current instance of game board. Returns whether the
+	* board configurations are identical.
+	*/
+	public boolean compareTo(Game_Board board) {
+		for (int x = 0; x < Game_Constants.BOARD_SIZE; x++) {
+			for (int y = 0; y < Game_Constants.BOARD_SIZE; y++) {
+				if (game_board[x][y] != board.getTile(x, y)) return false;
+			}
+		}
+
+		return true;
 	}
 
 	public void initializeBoard() {
