@@ -164,7 +164,7 @@ public class Game_GUI extends JFrame {
 			game_manager.userMakeMove(x, y);
 			updateBoard();
 			
-			if (game_manager.isGameWon()) {
+			if (game_manager.isSolved()) {
 				int moves = game_manager.getMoveCount();
 				int complexity = game_manager.getPuzzleComplexity();
 				JOptionPane.showMessageDialog(null, "Congrats! You won!\n " + 
