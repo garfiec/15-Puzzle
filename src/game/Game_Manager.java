@@ -16,6 +16,7 @@ public class Game_Manager {
 	private Deque<Point> history; 	// Log of moves user makes 
 
 	private int move_count;
+	private int puzzle_complexity;
 
 	public Game_Manager() {
 		// Validate game constants
@@ -29,6 +30,7 @@ public class Game_Manager {
 		blank_pos  = new Point(0, 0);
 		history = new ArrayDeque<Point>();
 		move_count = 0;
+		puzzle_complexity = 0;
 
 		// Start new game
 		startNewGame();
@@ -39,7 +41,8 @@ public class Game_Manager {
 		history.clear();
 		move_count = 0;
 
-		shuffleBoard(12);
+		// shuffleBoard(12);
+		randomizeBoard();
 	}
 	
 	private void initializeBoard() {
@@ -111,12 +114,12 @@ public class Game_Manager {
 	}
 
 	/*
-	* Function: shuffleBoard
+	* Function: shuffleBoard (Deprecated)
 	* ----------------------------------------------------
 	* Shuffles the board by randomly moving tiles until a
 	* specified depth (difficulty).
 	*/
-	public void shuffleBoard(int depth) {
+	private void shuffleBoard(int depth) {
 		for (int i = 0; i < depth; i++) {
 			int direction = ThreadLocalRandom.current().nextInt(0, 5);
 
@@ -143,6 +146,63 @@ public class Game_Manager {
 			else
 				i--; // Try again			
 		}
+	}
+
+	/*
+	* Function: randomizeBoard
+	* ----------------------------------------------------
+	* Generates a random board configurations until a
+	* solvable config is found.
+	*/
+	private void randomizeBoard() {
+		do {
+			ArrayList<Byte> tiles = new ArrayList<Byte>();
+			for (byte i = 1; i < NUM_PIECES; i++) 
+				tiles.add(i);
+
+			Collections.shuffle(tiles, new Random(System.nanoTime()));
+
+			int tileNum = 0;
+			for (int y = 0; y < BOARD_SIZE; y++) {
+				for (int x = 0; x < BOARD_SIZE; x++) {
+					game_board[x][y] = (tileNum == NUM_PIECES-1) ? -1:tiles.get(tileNum++);
+				}
+			}
+			puzzle_complexity = computePuzzleComplexity();
+		} while (puzzle_complexity % 2 == 1);
+
+	}
+
+	public int getPuzzleComplexity() {
+		return puzzle_complexity;
+	}
+
+	/*
+	* Function: computePuzzleComplexity
+	* ----------------------------------------------------
+	* Computes and returns a score for the puzzle complexity.
+	*/
+	private int computePuzzleComplexity() {
+		int[] list = new int[NUM_PIECES];
+		int invertCt = 0;
+
+		// Put tile arrangement into array
+		int tile_index = 0;
+		for (int y = 0; y < BOARD_SIZE; y++) {
+			for (int x = 0; x < BOARD_SIZE; x++) {
+				list[tile_index++] = (game_board[x][y] == -1) ? NUM_PIECES:game_board[x][y];
+			}
+		}
+
+		// Count num inversions
+		invertCt += list[0] - 1; // First piece is guarenteed to have every number below
+		for (int i = 0; i < NUM_PIECES; i++) {
+			for(int j = i; j < NUM_PIECES; j++) {
+				if (list[j] < list[i]) invertCt++;
+			}
+		}
+
+		return invertCt;
 	}
 
 	private void swapTile(int x1, int y1, int x2, int y2) {

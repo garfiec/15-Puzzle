@@ -170,7 +170,10 @@ public class Game_GUI extends JFrame {
 			
 			if (game_manager.isGameWon()) {
 				int moves = game_manager.getMoveCount();
-				JOptionPane.showMessageDialog(null, "Congrats! You won!\n You took " + moves + " moves.");
+				int complexity = game_manager.getPuzzleComplexity();
+				JOptionPane.showMessageDialog(null, "Congrats! You won!\n " + 
+													"You took " + moves + " moves.\n "+
+													"Puzzle complexity: " + complexity);
 			}
 		}
 
