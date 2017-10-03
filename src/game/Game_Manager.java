@@ -34,6 +34,7 @@ public class Game_Manager {
 
 		// Start new game
 		startNewGame();
+		Game_Solver solver = new Game_Solver(game_board, BOARD_SIZE);
 	}
 
 	public void startNewGame() {
