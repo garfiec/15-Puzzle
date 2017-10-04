@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.Timer;
+import game.Game_Constants.*;
 
 public class Game_GUI extends JFrame {
 	Game_Manager game_manager; 
@@ -22,7 +23,7 @@ public class Game_GUI extends JFrame {
 
 	// Set up GUI
 	public Game_GUI(Game_Manager gm) {
-		super("15 Tiles by Garfie Chiu");
+		super(Game_Constants.GUI_TITLE);
 
 		game_manager = gm;
 		solver = new Game_Solver(game_manager);
@@ -192,11 +193,11 @@ public class Game_GUI extends JFrame {
 	private class MenuButtonHandler implements ActionListener {
 		private void showHowTo() {
 			// TODO: Add how to note
-			JOptionPane.showMessageDialog(null, "1. Lorem ipsum dolar sit amet");
+			JOptionPane.showMessageDialog(null, Game_Constants.HOWTO_TEXT);
 		}
 
 		private void showAbout() {
-			JOptionPane.showMessageDialog(null, "Program by Garfie Chiu for CS342 - Project 2");
+			JOptionPane.showMessageDialog(null, Game_Constants.ABOUT_TEXT);
 		}
 
 		// Undo each move with delay for visualization
@@ -251,7 +252,6 @@ public class Game_GUI extends JFrame {
 					break;
 				case "Solve":
 					showSolution();
-					System.out.println("Solved");
 					break;
 				case "Exit":
 					System.out.println("Goodbye.");
