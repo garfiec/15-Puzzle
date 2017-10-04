@@ -99,12 +99,12 @@ public class Game_Board {
 	}
 
 	/*
-	* Function: getGameBoard
+	* Function: getMatrix
 	* ----------------------------------------------------
-	* Returns the game board for the interface to show
+	* Returns the game board matrix for the interface to show
 	* the respective tile numbers.
 	*/
-	public byte[][] getGameBoard() {
+	public byte[][] getMatrix() {
 		return game_board;
 	}
 
