@@ -198,6 +198,7 @@ public class Game_Manager {
 		if (history.size() > 0) {
 			Point last = history.pop();
 			board.makeMove(last.x, last.y);
+			move_count--;
 			return true;
 		}
 

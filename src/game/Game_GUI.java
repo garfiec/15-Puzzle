@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.Timer;
+import javax.swing.border.*;
 import game.Game_Constants.*;
 
 public class Game_GUI extends JFrame {
@@ -19,6 +20,9 @@ public class Game_GUI extends JFrame {
 
 	private JPanel panel; 
 	private JPanel gameBoardGrid; 
+	private JPanel statusBar;
+
+	private JLabel gameStatus;
 
 	private JButton gameBttnCtrls[][]; 
 
@@ -40,11 +44,13 @@ public class Game_GUI extends JFrame {
 		// Create UI
 		createMenuBar();
 		createGameUI();
+		createStatusBar();
 
 		// Show initial board setting
 		updateBoard();
+		updateUI();
 
-		setSize(500, 500);
+		setSize(350, 350);
 		setVisible(true);
 
 	} 
@@ -78,10 +84,10 @@ public class Game_GUI extends JFrame {
 
 		menu.addSeparator();
 
-		// 1.3 File Menu: Reset
-		menuItem = new JMenuItem("Reset");
+		// 1.3 File Menu: New Game
+		menuItem = new JMenuItem("New Game");
 		menuItem.getAccessibleContext().setAccessibleDescription("Starts a new game");
-		menuItem.setActionCommand("Reset");
+		menuItem.setActionCommand("New Game");
 		menuItem.addActionListener(menuBttnHndlr);
 		menu.add(menuItem);		
 
@@ -127,7 +133,8 @@ public class Game_GUI extends JFrame {
 
 		gameBoardGrid = new JPanel();
 		gameBoardGrid.setBackground(Color.white);
-		gameBoardGrid.setLayout(new GridLayout(Game_Constants.BOARD_SIZE, Game_Constants.BOARD_SIZE, 3, 3));
+		gameBoardGrid.setLayout(new GridLayout(Game_Constants.BOARD_SIZE, Game_Constants.BOARD_SIZE, 5, 5));
+		gameBoardGrid.setBorder(new EmptyBorder(5,5,5,5));
 
 		// Initialize Buttons
 		gameBttnCtrls = new JButton[Game_Constants.BOARD_SIZE][Game_Constants.BOARD_SIZE];
@@ -137,10 +144,12 @@ public class Game_GUI extends JFrame {
 
 				JPanel tile_pnl = new JPanel();
 				tile_pnl.setLayout(new BorderLayout(0, 0));
-				tile_pnl.setBackground(Color.black);
 				gameBoardGrid.add(tile_pnl, BorderLayout.CENTER);
 				
 				JButton bttn = new JButton();
+				bttn.setFocusPainted(false);
+				// bttn.setBackground(Color.LIGHT_GRAY);
+				bttn.setBackground(new Color(214, 230, 255));
 				bttn.setActionCommand(Integer.toString((i*Game_Constants.BOARD_SIZE) + j));
 				bttn.addActionListener(gameBttnHndlr);
 				tile_pnl.add(bttn, BorderLayout.CENTER);
@@ -152,17 +161,35 @@ public class Game_GUI extends JFrame {
 		getContentPane().add(gameBoardGrid, BorderLayout.CENTER);
 	}
 
+	private void createStatusBar() {
+		statusBar = new JPanel();
+		statusBar.setBorder(new BevelBorder(BevelBorder.RAISED));
+		gameStatus = new JLabel();
+		gameStatus.setText("");
+		statusBar.add(gameStatus);
+
+		getContentPane().add(statusBar, BorderLayout.SOUTH);
+	}
+
 	private void updateBoard() {
 		byte game_board[][] = game_manager.getGameBoard().getMatrix();
 
 		for (int x = 0; x < Game_Constants.BOARD_SIZE; x++) {
 			for (int y = 0; y < Game_Constants.BOARD_SIZE; y++) {
-				if (game_board[x][y] == -1)
+				if (game_board[x][y] == -1) {
 					gameBttnCtrls[x][y].setText("");
-				else 
+					gameBttnCtrls[x][y].setVisible(false);
+				}
+				else {
 					gameBttnCtrls[x][y].setText(Integer.toString(game_board[x][y]));
+					gameBttnCtrls[x][y].setVisible(true);
+				}
 			}
 		}
+	}
+
+	private void updateUI() {
+		gameStatus.setText("Game complexity: " + game_manager.getPuzzleComplexity() + " | Move count: " + game_manager.getMoveCount());
 	}
 
 	public class SolverThread implements Runnable {
@@ -185,6 +212,7 @@ public class Game_GUI extends JFrame {
 
 			game_manager.userMakeMove(x, y);
 			updateBoard();
+			updateUI();
 			
 			if (game_manager.isSolved()) {
 				int moves = game_manager.getMoveCount();
@@ -215,12 +243,14 @@ public class Game_GUI extends JFrame {
 						((Timer)event.getSource()).stop();
 					}
 					updateBoard();
+					updateUI();
 				}
 			});
 			t.start();
 		}
 
 		private void showSolution() {
+			JOptionPane.showMessageDialog(null, Game_Constants.SSOLUTION_TEXT);
 			if (!Game_Constants.SOLVER_RETROACTIVE) {
 				System.out.println("Solving...");
 				tr.start(); 
@@ -253,9 +283,10 @@ public class Game_GUI extends JFrame {
 					System.out.println("Undo all!");
 					undoAllMoves();
 					break;
-				case "Reset":
+				case "New Game":
 					game_manager.startNewGame();
 					updateBoard();
+					updateUI();
 					break;
 				case "Solve":
 					showSolution();
