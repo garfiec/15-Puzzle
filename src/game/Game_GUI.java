@@ -9,6 +9,7 @@ import javax.swing.Timer;
 
 public class Game_GUI extends JFrame {
 	Game_Manager game_manager; 
+	Game_Solver solver;
 
 	private JPanel panel; 
 	private JPanel gameBoardGrid; 
@@ -22,6 +23,7 @@ public class Game_GUI extends JFrame {
 		super("15 Tiles by Garfie Chiu");
 
 		game_manager = gm;
+		solver = new Game_Solver(game_manager);
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -141,7 +143,7 @@ public class Game_GUI extends JFrame {
 	}
 
 	private void updateBoard() {
-		byte game_board[][] = game_manager.getGameBoard();
+		byte game_board[][] = game_manager.getGameBoard().getMatrix();
 
 		for (int x = 0; x < Game_Constants.BOARD_SIZE; x++) {
 			for (int y = 0; y < Game_Constants.BOARD_SIZE; y++) {
@@ -201,6 +203,24 @@ public class Game_GUI extends JFrame {
 			t.start();
 		}
 
+		private void showSolution() {
+			Deque<Game_Board> solution = solver.solve();
+
+			Timer t = new Timer(500, new ActionListener() {
+				public void actionPerformed(ActionEvent event) {
+					if (solution.size() > 0){
+						System.out.println("Got here");
+						game_manager.setGameBoard(solution.pop());
+						updateBoard();
+					}
+					else {
+						((Timer)event.getSource()).stop();
+					}
+				}
+			});
+			t.start();
+		}
+
 		public void actionPerformed(ActionEvent event) {
 			switch(event.getActionCommand()) {
 				case "Undo":
@@ -217,7 +237,7 @@ public class Game_GUI extends JFrame {
 					updateBoard();
 					break;
 				case "Solve":
-					// TODO: Solve
+					showSolution();
 					System.out.println("Solve");
 					break;
 				case "Exit":
