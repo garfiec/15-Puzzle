@@ -9,7 +9,7 @@ import game.Game_Constants.*;
 
 public class Game_Manager {
 
-	private Game_Board board = new Game_Board();
+	private Game_Board board;
 
 	private Deque<Point> history; 	// Log of moves user makes 
 
@@ -24,6 +24,7 @@ public class Game_Manager {
 		}
 
 		// Initialize Game Variables
+		board = new Game_Board();
 		move_count = 0;
 		puzzle_complexity = 0;
 		history = new ArrayDeque<Point>();
