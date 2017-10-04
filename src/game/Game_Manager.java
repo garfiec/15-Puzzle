@@ -37,8 +37,8 @@ public class Game_Manager {
 		move_count = 0;
 		history.clear();
 
-		shuffleBoard(12);
-		// randomizeBoard();
+		// shuffleBoard(12);
+		randomizeBoard();
 	}
 
 	/*
@@ -88,6 +88,7 @@ public class Game_Manager {
 			else
 				i--; // Try again			
 		}
+		puzzle_complexity = computePuzzleComplexity();
 	}
 
 	/*
