@@ -189,9 +189,6 @@ public class Game_GUI extends JFrame {
 
 		// Undo each move with delay for visualization
 		private void undoAllMoves() {
-			// while (game_manager.undoMove()) {	
-
-			// }
 			Timer t = new Timer(500, new ActionListener() {
 				public void actionPerformed(ActionEvent event) {
 					if (!game_manager.undoMove()) {
@@ -209,7 +206,6 @@ public class Game_GUI extends JFrame {
 			Timer t = new Timer(500, new ActionListener() {
 				public void actionPerformed(ActionEvent event) {
 					if (solution.size() > 0){
-						System.out.println("Got here");
 						game_manager.setGameBoard(solution.pop());
 						updateBoard();
 					}
@@ -238,7 +234,7 @@ public class Game_GUI extends JFrame {
 					break;
 				case "Solve":
 					showSolution();
-					System.out.println("Solve");
+					System.out.println("Solved");
 					break;
 				case "Exit":
 					System.out.println("Goodbye.");
