@@ -37,18 +37,22 @@ public class Game_Manager {
 		move_count = 0;
 		history.clear();
 
-		// shuffleBoard(12);
-		randomizeBoard();
+		shuffleBoard(12);
+		// randomizeBoard();
 	}
 
 	/*
 	* Function: getGameBoard
 	* ----------------------------------------------------
-	* Returns the game board for the interface to show
-	* the respective tile numbers.
+	* Returns the game board for another interface to
+	* to interact with the board.
 	*/
-	public byte[][] getGameBoard() {
-		return board.getGameBoard();
+	public Game_Board getGameBoard() {
+		return board;
+	}
+
+	public void setGameBoard(Game_Board b) {
+		board = b;
 	}
 
 	/*
