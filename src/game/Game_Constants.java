@@ -1,6 +1,13 @@
 package game;
 
 public final class Game_Constants {
+	/*
+	* Solver runs on two modes:
+	* 	True: solver will run in the background shortly after puzzle is generated (assuming it will take a while to solve)
+	* 	False: solver will only run when the user clicks solve. (Note: This solves the puzzle after )
+	*/ 
+	public static final boolean SOLVER_RETROACTIVE = true;
+
 	public static final int BOARD_SIZE = 4;
 	public static final int NUM_PIECES = BOARD_SIZE * BOARD_SIZE;
 

@@ -10,8 +10,11 @@ import game.Game_Constants.*;
 
 public class Game_GUI extends JFrame {
 	Game_Manager game_manager; 
+
+	// Solver
 	Game_Solver solver;
-	SolverThread st;
+	SolverThread st = new SolverThread();
+	Thread tr = new Thread(st);
 	Deque<Game_Board> solution;
 
 	private JPanel panel; 
@@ -27,6 +30,10 @@ public class Game_GUI extends JFrame {
 
 		game_manager = gm;
 		solver = new Game_Solver(game_manager);
+		if (Game_Constants.SOLVER_RETROACTIVE) {
+			System.out.println("Solving (ahead of time)...");
+			tr.start(); 
+		}
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -214,10 +221,10 @@ public class Game_GUI extends JFrame {
 		}
 
 		private void showSolution() {
-			System.out.println("Solving...");
-			st = new SolverThread();
-			Thread tr = new Thread(st);
-			tr.start(); 
+			if (!Game_Constants.SOLVER_RETROACTIVE) {
+				System.out.println("Solving...");
+				tr.start(); 
+			}
 
 			Timer ti = new Timer(500, new ActionListener() {
 				public void actionPerformed(ActionEvent event) {
