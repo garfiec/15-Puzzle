@@ -10,6 +10,8 @@ import javax.swing.Timer;
 public class Game_GUI extends JFrame {
 	Game_Manager game_manager; 
 	Game_Solver solver;
+	SolverThread st;
+	Deque<Game_Board> solution;
 
 	private JPanel panel; 
 	private JPanel gameBoardGrid; 
@@ -155,6 +157,16 @@ public class Game_GUI extends JFrame {
 		}
 	}
 
+	public class SolverThread implements Runnable {
+		public boolean solution_available = false;
+
+		@Override
+		public void run() {
+			solution = solver.solve();
+			solution_available = true;
+		}
+	}
+
 	// Game Interface
 	private class GameButtonHandler implements ActionListener {
 		public void actionPerformed( ActionEvent event ) {
@@ -201,20 +213,25 @@ public class Game_GUI extends JFrame {
 		}
 
 		private void showSolution() {
-			Deque<Game_Board> solution = solver.solve();
+			System.out.println("Solving...");
+			st = new SolverThread();
+			Thread tr = new Thread(st);
+			tr.start(); 
 
-			Timer t = new Timer(500, new ActionListener() {
+			Timer ti = new Timer(500, new ActionListener() {
 				public void actionPerformed(ActionEvent event) {
-					if (solution.size() > 0){
-						game_manager.setGameBoard(solution.pop());
-						updateBoard();
-					}
-					else {
-						((Timer)event.getSource()).stop();
+					if (st.solution_available) {
+						if (solution.size() > 0) {
+							game_manager.setGameBoard(solution.pop());
+							updateBoard();
+						}
+						else {
+							((Timer)event.getSource()).stop();
+						}
 					}
 				}
 			});
-			t.start();
+			ti.start();
 		}
 
 		public void actionPerformed(ActionEvent event) {
