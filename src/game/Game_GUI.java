@@ -84,6 +84,10 @@ public class Game_GUI extends JFrame {
 		BufferedImage importedImage = null;
 		try {
 			importedImage = ImageIO.read(file);
+			if (importedImage == null) {
+				System.out.println("Error loading image file");
+				return;
+			}
 		}
 		catch (IOException e) {
 			System.out.println("Error loading image file.");
