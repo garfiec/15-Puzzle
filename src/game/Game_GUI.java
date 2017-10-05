@@ -7,10 +7,14 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.Timer;
 import javax.swing.border.*;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import game.Game_Constants.*;
 
 public class Game_GUI extends JFrame {
-	Game_Manager game_manager; 
+	private Game_Manager game_manager;
+
+	private boolean useImage;
 
 	// Solver
 	Game_Solver solver;
@@ -25,6 +29,7 @@ public class Game_GUI extends JFrame {
 	private JLabel gameStatus;
 
 	private JButton gameBttnCtrls[][]; 
+	private BufferedImage subImages[];
 
 	private JMenuBar menuBar;
 
@@ -46,14 +51,67 @@ public class Game_GUI extends JFrame {
 		createGameUI();
 		createStatusBar();
 
+		useImage = false;
+		subImages = new BufferedImage[Game_Constants.NUM_PIECES + 1];
+
 		// Show initial board setting
+		
 		updateBoard();
 		updateUI();
 
-		setSize(350, 350);
+		setResizable(false);
+		setSize(Game_Constants.GUI_WIDTH, Game_Constants.GUI_HEIGHT);
 		setVisible(true);
 
 	} 
+
+	private File findImage() {
+		final JFileChooser dialog = new JFileChooser();
+		dialog.setCurrentDirectory(new File(System.getProperty("user.home")));
+		int result = dialog.showOpenDialog(this);
+
+		if (result == JFileChooser.APPROVE_OPTION) {
+			return dialog.getSelectedFile();
+		}
+
+		return null;
+	}
+
+	private void loadImage(File file) {
+		// No file
+		if (file == null) return;
+
+		BufferedImage importedImage = null;
+		try {
+			importedImage = ImageIO.read(file);
+		}
+		catch (IOException e) {
+			System.out.println("Error loading image file.");
+			return;	
+		}
+		useImage = true;
+
+		// Resize
+		Image tmp = importedImage.getScaledInstance((int) (Game_Constants.GUI_WIDTH * 1.1), (int) (Game_Constants.GUI_HEIGHT * 1.1), BufferedImage.SCALE_FAST);
+		BufferedImage resizedImage = new BufferedImage((int)(Game_Constants.GUI_WIDTH * 1.1), (int) (Game_Constants.GUI_HEIGHT * 1.1), BufferedImage.TYPE_INT_RGB);
+		resizedImage.getGraphics().drawImage(tmp, 0, 0, null);
+
+		int imageX = resizedImage.getWidth();
+		int imageY = resizedImage.getHeight();
+
+		int chunkX = (int) (imageX / 4);
+		int chunkY = (int) (imageY / 4);
+
+		// Save image chunks
+		int i = 1; 
+		for (int y = 0; y < Game_Constants.BOARD_SIZE; y++) {
+			for (int x = 0; x < Game_Constants.BOARD_SIZE; x++) {
+				subImages[i++] = resizedImage.getSubimage(x*chunkX, y*chunkY, chunkX, chunkY);
+			}
+		}
+			
+
+	}
 
 
 	private void createMenuBar() {
@@ -68,7 +126,40 @@ public class Game_GUI extends JFrame {
 		menu = new JMenu("File");
 		menuBar.add(menu);
 
-		// 1.1 File Menu: Undo
+		// 1.1 File Menu: New Game
+		menuItem = new JMenuItem("New Game");
+		menuItem.getAccessibleContext().setAccessibleDescription("Starts a new game");
+		menuItem.setActionCommand("New Game");
+		menuItem.addActionListener(menuBttnHndlr);
+		menu.add(menuItem);				
+
+		menu.addSeparator();
+
+		// 1.2 File Menu: Select Image
+		menuItem = new JMenuItem("Select Image");
+		menuItem.setActionCommand("Select Image");
+		menuItem.addActionListener(menuBttnHndlr);
+		menu.add(menuItem);	
+
+		// 1.3 File Menu: Remove Image
+		menuItem = new JMenuItem("Remove Image");
+		menuItem.setActionCommand("Remove Image");
+		menuItem.addActionListener(menuBttnHndlr);
+		menu.add(menuItem);	
+
+		menu.addSeparator();
+
+		// 1.3 File Menu: Exit
+		menuItem = new JMenuItem("Exit");
+		menuItem.setActionCommand("Exit");
+		menuItem.addActionListener(menuBttnHndlr);
+		menu.add(menuItem); 
+
+		// 2. Edit Menu
+		menu = new JMenu("Tools");
+		menuBar.add(menu);
+
+		// 2.1 File Menu: Undo
 		menuItem = new JMenuItem("Undo");
 		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
 		menuItem.getAccessibleContext().setAccessibleDescription("Undo last move");
@@ -76,42 +167,27 @@ public class Game_GUI extends JFrame {
 		menuItem.addActionListener(menuBttnHndlr);
 		menu.add(menuItem);		
 
-		// 1.2 File Menu: Undo
+		// 2.2 File Menu: Undo
 		menuItem = new JMenuItem("Undo All");
 		menuItem.setActionCommand("Undo All");
 		menuItem.addActionListener(menuBttnHndlr);
 		menu.add(menuItem);	
 
-		menu.addSeparator();
+		// 3. Tools Menu
+		menu = new JMenu("Tools");
+		menuBar.add(menu);
 
-		// 1.3 File Menu: New Game
-		menuItem = new JMenuItem("New Game");
-		menuItem.getAccessibleContext().setAccessibleDescription("Starts a new game");
-		menuItem.setActionCommand("New Game");
-		menuItem.addActionListener(menuBttnHndlr);
-		menu.add(menuItem);		
-
-		menu.addSeparator();
-
-		// 1.4 File Menu: Solve
+		// 3.4 File Menu: Solve
 		menuItem = new JMenuItem("Solve");
 		menuItem.setActionCommand("Solve");
 		menuItem.addActionListener(menuBttnHndlr);
 		menu.add(menuItem);	
 
-		menu.addSeparator();
-
-		// 1.5 File Menu: Exit
-		menuItem = new JMenuItem("Exit");
-		menuItem.setActionCommand("Exit");
-		menuItem.addActionListener(menuBttnHndlr);
-		menu.add(menuItem);		 
-
-		// 2. Help Menu
+		// 4. Help Menu
 		menu = new JMenu("Help");
 		menuBar.add(menu);
 
-		// 2.1 Help Menu: How to Play
+		// 4.1 Help Menu: How to Play
 		menuItem = new JMenuItem("How to Play", KeyEvent.VK_A);
 		// menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, ActionEvent.ALT_MASK));
 		menuItem.getAccessibleContext().setAccessibleDescription("");
@@ -119,7 +195,7 @@ public class Game_GUI extends JFrame {
 		menuItem.addActionListener(menuBttnHndlr);
 		menu.add(menuItem);
 
-		// 2.2 Help Menu: About
+		// 4.2 Help Menu: About
 		menuItem = new JMenuItem("About");
 		menuItem.setActionCommand("About");
 		menuItem.addActionListener(menuBttnHndlr);
@@ -179,10 +255,25 @@ public class Game_GUI extends JFrame {
 				if (game_board[x][y] == -1) {
 					gameBttnCtrls[x][y].setText("");
 					gameBttnCtrls[x][y].setVisible(false);
+					if (useImage) {
+						if (game_manager.isSolved()) {
+							gameBttnCtrls[x][y].setIcon(new ImageIcon(subImages[Game_Constants.NUM_PIECES]));
+							gameBttnCtrls[x][y].setVisible(true);
+						}
+					}
+					else {
+						gameBttnCtrls[x][y].setIcon(null);
+					}
 				}
 				else {
 					gameBttnCtrls[x][y].setText(Integer.toString(game_board[x][y]));
 					gameBttnCtrls[x][y].setVisible(true);
+					if (useImage) {
+						gameBttnCtrls[x][y].setIcon(new ImageIcon(subImages[game_board[x][y]]));
+					}
+					else {
+						gameBttnCtrls[x][y].setIcon(null);
+					}
 				}
 			}
 		}
@@ -227,7 +318,6 @@ public class Game_GUI extends JFrame {
 
 	private class MenuButtonHandler implements ActionListener {
 		private void showHowTo() {
-			// TODO: Add how to note
 			JOptionPane.showMessageDialog(null, Game_Constants.HOWTO_TEXT);
 		}
 
@@ -274,26 +364,34 @@ public class Game_GUI extends JFrame {
 
 		public void actionPerformed(ActionEvent event) {
 			switch(event.getActionCommand()) {
-				case "Undo":
-					if (!game_manager.undoMove())
-						JOptionPane.showMessageDialog(null, "Nothing to undo!");
-					updateBoard();
-					break;
-				case "Undo All":
-					System.out.println("Undo all!");
-					undoAllMoves();
-					break;
 				case "New Game":
 					game_manager.startNewGame();
 					updateBoard();
 					updateUI();
 					break;
-				case "Solve":
-					showSolution();
+				case "Select Image":
+					loadImage(findImage());
+					updateBoard();
+					break;
+				case "Remove Image":
+					useImage = false;
+					updateBoard();
 					break;
 				case "Exit":
 					System.out.println("Goodbye.");
 					System.exit(0);
+					break;
+				case "Undo":
+					if (!game_manager.undoMove())
+						JOptionPane.showMessageDialog(null, "Nothing to undo!");
+						updateBoard();
+					break;
+				case "Undo All":
+					System.out.println("Undo all!");
+					undoAllMoves();
+					break;
+				case "Solve":
+					showSolution();
 					break;
 				case "Tutorial":
 					showHowTo();
